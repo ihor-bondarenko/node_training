@@ -24,7 +24,6 @@ function createFileReader(filename) {
   };
 }
 
-
 const reader1 = createFileReader('data.txt');
 console.log('run reader1');
 reader1.onDataReady(data => {
