@@ -3,7 +3,8 @@ const cache = {};
 function inconsistentRead(filename, callback) {
   if(cache[filename]) {
   //invoked synchronously
-    callback(cache[filename]);
+  console.log('123');
+    process.nextTick(() => {callback(cache[filename])});
   } else {
     //asynchronous function
     fs.readFile(filename, 'utf8', (err, data) => {
