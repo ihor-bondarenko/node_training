@@ -1,5 +1,8 @@
+'use strict';
 const fs = require('fs');
-const cache = {};
+const util = require('util');
+const http = require('http');
+/*const cache = {};
 function inconsistentRead(filename, callback) {
   if(cache[filename]) {
   //invoked synchronously
@@ -34,4 +37,40 @@ reader1.onDataReady(data => {
     reader2.onDataReady( data => {
       console.log('Second call data: ' + data);
     });
+});*/
+
+
+function parentClass(){
+    this.test = 'test parent';
+//  console.log(this);
+};
+parentClass.prototype = {
+  test: () => { console.log('test') }
+};
+
+function childClass(){
+  parentClass.call(this);
+  this.test = 'test child';
+};
+//const obj = new childClass();
+//console.log(obj.test());
+
+const server = http.createServer((req, res) => {
+  console.log('created');
+  res.end();
 });
+process.nextTick(()=> {
+  console.log('after created next tick1');
+  process.nextTick(()=> {
+    console.log('after created next tick2');
+  })
+})
+server.on('listening', () => {
+  console.log('listening');
+});
+server.on('clientError', (err, socket) => {
+  socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
+});
+server.listen(8022);
+//console.log(util.inspect(obj, { showHidden: true }));
+//const interval = setTimeout(()=>{console.log('interval')}, 2000)
