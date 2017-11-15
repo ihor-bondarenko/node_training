@@ -54,19 +54,37 @@ function childClass(){
 };
 //const obj = new childClass();
 //console.log(obj.test());
+console.time("t1");
+setTimeout(() => {
+    //nexTickLoop();
+    console.log('set timeout 1');
+    console.timeEnd("t1");
+}, 100);
 
 const server = http.createServer((req, res) => {
   console.log('created');
   res.end();
 });
-process.nextTick(()=> {
-  console.log('after created next tick1');
+
+setImmediate(()=> {
+  console.log('immediate 1');
+});
+
+function nexTickLoop() {
   process.nextTick(()=> {
     console.log('after created next tick2');
   })
-})
+}
+let i = 10
+while(i > 0){
+  i--;
+}
+
 server.on('listening', () => {
   console.log('listening');
+});
+process.nextTick(()=> {
+  console.log('after created next tick1');
 });
 server.on('clientError', (err, socket) => {
   socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
