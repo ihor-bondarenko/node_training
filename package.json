@@ -10,5 +10,9 @@
   "license": "ISC",
   "devDependencies": {
     "nodedump": "0.0.8"
+  },
+  "dependencies": {
+    "mkdirp": "^0.5.1",
+    "request": "^2.83.0"
   }
 }

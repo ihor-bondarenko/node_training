@@ -1,94 +1,76 @@
-'use strict';
-const fs = require('fs');
-const util = require('util');
-const http = require('http');
-/*const cache = {};
-function inconsistentRead(filename, callback) {
-  if(cache[filename]) {
-  //invoked synchronously
-    process.nextTick(() => {callback(cache[filename])});
-  } else {
-    //asynchronous function
-    fs.readFile(filename, 'utf8', (err, data) => {
-      cache[filename] = data;
-      console.log(data);
-      callback(data);
-    });
-  }
-}
+const    request = require('request');
+const    fs = require('fs');
+const    mkdirp = require('mkdirp');
+const    path = require('path');
+const    utilities = require('./utilities');
+const TaskQueue = require('./taskQueue');
+const downloadQueue = new TaskQueue(2);
 
-function createFileReader(filename) {
-  const listeners = [];
-  inconsistentRead(filename, value => {
-    listeners.forEach(listener => listener(value));
+function saveFile(filename, contents, callback){
+  mkdirp(path.dirname(filename), err => {
+    if(err) {
+      return callback(err);
+    }
+    fs.writeFile(filename, contents, callback);
   });
-  return {
-    onDataReady: listener => listeners.push(listener)
-  };
 }
 
-const reader1 = createFileReader('data.txt');
-console.log('run reader1');
-reader1.onDataReady(data => {
-    console.log('First call data: ' + data);
-    //...sometime later we try to read again from
-    //the same file
-    const reader2 = createFileReader('data.txt');
-    reader2.onDataReady( data => {
-      console.log('Second call data: ' + data);
+function download(url, filename, callback) {
+  console.log(`Downloading ${url}`);
+  request(url, (err, response, body) => {
+    if(err) {
+      return callback(err);
+    }
+    saveFile(filename, body, err => {
+      if(err) {
+        return callback(err);
+      }
+      console.log(`Downloaded and saved: ${url}`);
+      callback(null, body);
     });
-});*/
-
-
-function parentClass(){
-    this.test = 'test parent';
-//  console.log(this);
-};
-parentClass.prototype = {
-  test: () => { console.log('test') }
-};
-
-function childClass(){
-  parentClass.call(this);
-  this.test = 'test child';
-};
-//const obj = new childClass();
-//console.log(obj.test());
-console.time("t1");
-setTimeout(() => {
-    //nexTickLoop();
-    console.log('set timeout 1');
-    console.timeEnd("t1");
-}, 100);
-
-const server = http.createServer((req, res) => {
-  console.log('created');
-  res.end();
-});
-
-setImmediate(()=> {
-  console.log('immediate 1');
-});
-
-function nexTickLoop() {
-  process.nextTick(()=> {
-    console.log('after created next tick2');
-  })
-}
-let i = 10
-while(i > 0){
-  i--;
+  });
 }
 
-server.on('listening', () => {
-  console.log('listening');
-});
-process.nextTick(()=> {
-  console.log('after created next tick1');
-});
-server.on('clientError', (err, socket) => {
-  socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
-});
-server.listen(8022);
-//console.log(util.inspect(obj, { showHidden: true }));
-//const interval = setTimeout(()=>{console.log('interval')}, 2000)
+function spiderLinks(currentUrl, body, nesting, callback) {
+  if(nesting === 0) {
+    return process.nextTick(callback);
+  }
+  const links = utilities.getPageLinks(currentUrl, body);
+  if(links.length === 0) {
+    return process.nextTick(callback);
+  }
+  let completed = 0, hasErrors = false;
+  links.forEach(link => {
+    downloadQueue.pushTask(done => {
+      spider(link, nesting - 1, err => {
+        if(err) {
+          hasErrors= true;
+          return callback(err);
+        }
+        if(++completed === links.length && !hasErrors) {
+          callback();
+        }
+        done();
+      });
+    });
+  });
+}
+
+
+function spider(url, nesting, callback) {
+  const filename = utilities.urlToFilename(url);
+  fs.readFile(filename, 'utf8', (err, body) => {
+    if(err) {
+      if(err.code !== 'ENOENT') {
+        return callback(err);
+      }
+      return download(url, filename, (err, body) => {
+        if(err) {
+          return callback(err);
+        }
+        spiderLinks(url, body, nesting, callback);
+      });
+    }
+    spiderLinks(url, body, nesting, callback);
+  });
+}
