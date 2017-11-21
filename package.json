@@ -12,7 +12,9 @@
     "nodedump": "0.0.8"
   },
   "dependencies": {
+    "co": "^4.6.0",
     "mkdirp": "^0.5.1",
-    "request": "^2.83.0"
+    "request": "^2.83.0",
+    "thunkify": "^2.1.2"
   }
 }
