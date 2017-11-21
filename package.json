@@ -12,6 +12,7 @@
     "nodedump": "0.0.8"
   },
   "dependencies": {
+    "chance": "^1.0.12",
     "co": "^4.6.0",
     "mkdirp": "^0.5.1",
     "request": "^2.83.0",

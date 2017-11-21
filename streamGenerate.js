@@ -5,4 +5,6 @@ randomStream.on('readable', () => {
   while((chunk = randomStream.read()) !== null) {
     console.log(`Chunk received: ${chunk.toString()}`);
   }
+}).on('error', () => {
+  console.log('finish')
 });
