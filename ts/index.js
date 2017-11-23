@@ -1,30 +1,26 @@
-function func1(types_arr, opt, def) {
-    if (def === void 0) { def = 'default params'; }
-    if (typeof types_arr !== 'undefined') {
-        [].map.call(types_arr, function (o) {
-            console.log(o);
-        });
+var Group = /** @class */ (function () {
+    function Group(name, genre) {
+        this.name = name;
+        this.genre = genre;
     }
-    return [].shift.call(types_arr);
-}
-var types1 = [
-    {
-        name: 'type1 name',
-        id: 1
-    },
-    {
-        name: 'type2 name',
-        id: 2
+    Group.prototype.getGroupName = function () {
+        return this.name;
+    };
+    return Group;
+}());
+var Album = /** @class */ (function () {
+    function Album(group, name) {
+        this.group = group;
+        this.name = name;
+        //console.log(name);
     }
-];
-var typeRet = func1(types1);
-console.log(typeRet);
-var ScopePreservingExample = {
-    text: "Property from lexical scope",
-    run: function () {
-        var _this = this;
-        setTimeout(function () {
-            alert(_this.text);
-        }, 1000);
-    }
-};
+    Album.prototype.getAlbumName = function () {
+        return this.name;
+    };
+    Album.prototype.getGroupName = function () {
+        return this.group.getGroupName();
+    };
+    return Album;
+}());
+var album = new Album(new Group('Mgla', 'Black Metal'), 'Exercises in futility');
+console.log(album.getGroupName());
