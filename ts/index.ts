@@ -39,7 +39,7 @@ interface GroupInterface {
     genre: string
 }
 
-class Group implements GroupInterface{   
+class Group implements GroupInterface {   
     constructor(public name: string, public genre: string) {}
 
     public getGroupName() {
