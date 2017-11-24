@@ -10,7 +10,7 @@ var sequelize = getInstance({
     'password': '1987',
     pool: {
         min: 1,
-        idle: 10000
+        idle: 10
     }
 });
 exports.default = sequelize;

@@ -28,7 +28,5 @@ function save() {
 }
 save()
     .then(function (album) { return album.update({ name: 'Exercise in futility!!!' }); })
-    .then(function (album) {
-    console.log('updated');
-});
+    .then(function (album) { console.log('updated'); });
 console.log('123');

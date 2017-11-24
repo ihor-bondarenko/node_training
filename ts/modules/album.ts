@@ -55,8 +55,6 @@ save()
     album => album.update({name: 'Exercise in futility!!!'})
 )
 .then(
-    album => { 
-        console.log('updated')
-     }
+    album => { console.log('updated') }
 );
 console.log('123');
