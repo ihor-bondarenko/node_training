@@ -9,12 +9,15 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "nodedump": "0.0.8"
+    "nodedump": "0.0.8",
+    "sequelize": "^4.22.15"
   },
   "dependencies": {
+    "bluebird": "^3.5.1",
     "chance": "^1.0.12",
     "co": "^4.6.0",
     "mkdirp": "^0.5.1",
+    "mysql2": "^1.5.1",
     "request": "^2.83.0",
     "split": "^1.0.1",
     "thunkify": "^2.1.2"
